@@ -3,9 +3,60 @@
 <script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <a href="https://en.wikipedia.org/wiki/List_of_cities_in_the_United_Kingdom">Source</a>
+    <div id="map">Loading data...</div>
+    <div><input type="text" name="guess" id="guess-input"></div>
+    <a href="https://en.wikipedia.org/wiki/List_of_cities_in_the_United_Kingdom">Data Source</a>
     <a href="https://iafisher.com/projects/cities">Inspiration</a>
 </body>
-<script src="index.js">
+<script>
+
+console.log('uk cities v0.1');
+
+const normalise = (str) => {
+    if(!str || str == '') return null;
+    return String(str)
+        .toLowerCase()
+        .replace('ù','u')
+        .replace('è','e')
+        .replace('é','e')
+        .replace('ú','u')
+        .replace('á','a')
+        .replace(/[\s\W]/g, '');
+}
+
+const addNormalisedNames = d=>{
+    d.normalisedNames = [
+        normalise(d.name),
+        ...d.acceptable.split(',').map(e=>normalise(e)),
+        normalise(d.welsh),
+        normalise(d['scottish gaelic']),
+        normalise(d['cornish'])
+    ].filter(value=>value!=null);
+    return d;
+}
+
+d3.tsv('cities.tsv', addNormalisedNames)
+    .then(cities=>{
+        console.log(cities.map(c=>c.normalisedNames));
+        const inputText = d3.select('#guess-input');
+        const test = (guessString)=>{
+            console.log('testing', guessString)
+            return cities
+                .filter(city=>(city.normalisedNames.indexOf(guessString)>-1))[0];
+        }
+
+        inputText.node()
+            .addEventListener('keyup', function(ev){
+                if(ev.code == 'Enter'){
+                    const city = test(normalise(ev.target.value));
+                    if(city){
+                        console.log(city);
+                    }else{
+                        console.log('nope');
+                    };
+                }
+            });
+    });
+
+</script>
 </html>
