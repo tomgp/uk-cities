@@ -52,13 +52,19 @@ svg.button{
 }
 .guess{
   text-decoration: none;
-  border: 1px solid #0028ff;
-  padding: 7px;
-  font-size:25px;
+  border: 3px solid #0028ff;
+  padding: 5px;
+  font-size: 25px;
+  height: 35px;
+  color: #0028ff;
+  background: white;
+  box-sizing: border-box;
+  position: relative;
+  top: -3px;
 }
 .guess:hover{
   color: #ff2800;
-  border: 1px solid #ff2800;
+  border: 3px solid #ff2800;
 }
 
 .output{

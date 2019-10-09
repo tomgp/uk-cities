@@ -1,6 +1,34 @@
 
 console.log('uk cities v0.1');
 
+let stateEncoding = '';
+
+function encodeState(data){
+    const guesses = data.map(d=>{
+        return { 
+            id: d.id, 
+            guessed: d.guessed
+        };
+    }).filter(d=>d.guessed);
+    window.location.hash = btoa(JSON.stringify(guesses));
+    return btoa(JSON.stringify(guesses));
+}
+
+function decodeState(data, encoded){
+    const state = JSON.parse(atob(encoded));
+    const lookup = state.reduce((acc, current)=>{
+        acc[current.id] = current;
+        return acc;
+    }, {});
+
+    return data.map(d=>{
+        if(lookup[d.id]){
+            d.guessed = lookup[d.id].guessed;
+        }
+        return d;
+    });
+}
+
 const normalise = (str) => {
     if(!str || str == '') return null;
     return String(str)
@@ -94,7 +122,7 @@ function addMap(data){
         .append('path')
             .attr('d', path);
 
-    map.append('g').attr('class','interaction-layer')
+    const interactionLayer = map.append('g').attr('class','interaction-layer')
 
     function addDots(cities){
         const guessedCities = cities
@@ -113,26 +141,46 @@ function addMap(data){
             .attr('cy',d=>{
                 return projection([Number(d.lon),Number(d.lat)])[1]
             })
-            .attr('r',5)
+            .attr('r',5);
+        
+        interactionLayer
 
     }
 
     return addDots;
 }
 
+
+
 function go(){
-    d3.tsv('cities.tsv', addNormalisedNames)
-        .then(cities=>{
-            let map;
-            d3.json('./map.geo.json')
-                .then((d)=>{
-                    map = addMap(d);
-                });
+    const getCityData = d3.tsv('cities.tsv', addNormalisedNames);
+    const getGeoData = d3.json('map.json');
+
+    Promise.all([getCityData, getGeoData])
+        .then(([cities, geoData])=>{
+            console.log(cities, geoData);
+            const URLstate = window.location.hash.substr(1);
+            let guessOrder = 1;
+            
+            const map = addMap(geoData);
+
+            function updateUI(cities){
+                drawGuessedList(cities);
+                drawCompletionScores(cities);
+                map(cities);
+            }
+
+            if(URLstate){
+                cities = decodeState(cities, URLstate);
+                guessOrder = d3.max(cities,d=>Number(d.guessed));
+                updateUI(cities);
+            }
+
 
             const inputText = d3.select('#guess-input');
             
             const test = guessString=>cities.filter(city=>(city.normalisedNames.indexOf(guessString)>-1))[0];
-            let guessOrder = 1;
+            
 
             d3.select('.guess').node()
                 .addEventListener('click', function(ev){
@@ -144,12 +192,11 @@ function go(){
                             city.guessed = guessOrder;
                             guessOrder ++;
                         }                    
-                        drawGuessedList(cities);
-                        drawCompletionScores(cities);
-                        map(cities);
+                        updateUI(cities);
                     }else{
                         console.log('nope');
                     };
+                    encodeState(cities);
                     inputText.node().value = '';
                     return false;
                 })
@@ -157,19 +204,20 @@ function go(){
             inputText.node()
                 .addEventListener('keyup', function(ev){
                     if(ev.code == 'Enter'){
-                        const city = test(normalise(ev.target.value));
+                        const value = ev.target.value;
+                        const city = test(normalise(value));
                         if(city){
                             if(!city.guessed){
                                 city.guessed = guessOrder;
                                 guessOrder ++;
                             }                    
-                            drawGuessedList(cities);
-                            drawCompletionScores(cities);
-                            map(cities);
+                            updateUI(cities);
                         }else{
                             console.log('nope');
                         };
+                        encodeState(cities);
                         inputText.node().value = '';
+                        return false;
                     }
                     
                 });
