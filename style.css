@@ -1,0 +1,67 @@
+body {
+  font-family: sans-serif;
+  color: #0028ff;
+}
+
+a {
+  color: #0028ff;    
+}
+
+ul{
+  list-style-type: none;
+}
+
+path {
+  fill: white;
+  stroke: #0028ff;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+circle {
+  fill: white;
+  stroke: #ff2800;
+  stroke-width: 2px;
+}
+
+#guess-input {
+  font-size: 30px;
+  border:none;
+  border-bottom: 3px solid #0028ff;
+  color: #0028ff;
+  background-color : #dedede; 
+}
+
+#map{
+  display:inline-block;
+  vertical-align:top;
+}
+
+#text{
+  display:inline-block;
+  vertical-align:top;
+}
+
+li:first-child{
+  color: #ff2800;
+  font-weight: bold;
+}
+
+svg.button{
+  stroke: none;
+}
+.guess{
+  text-decoration: none;
+  border: 1px solid #0028ff;
+  padding: 7px;
+  font-size:25px;
+}
+.guess:hover{
+  color: #ff2800;
+  border: 1px solid #ff2800;
+}
+
+.output{
+  border-bottom:solid 2px;
+  margin-bottom:20px;
+}

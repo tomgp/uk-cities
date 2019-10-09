@@ -1,121 +1,36 @@
 <html>
 <head>
 <script src="https://d3js.org/d3.v5.min.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="map">Loading data...</div>
-    <div id="complete">
-        <ul></ul>
+    <h1>How many UK cities can you name?</h1>
+    <div>
+        <input type="text" autocomplete="off" name="guess" id="guess-input" placeholder="city ...">
+        <a class="guess" href="#">
+            guess!
+        </a>
     </div>
-    <div id="guessed-cities">
-        <ul></ul>
+    <div class="output">
+        <div id="map">
+        <svg></svg>
+        </div>
+        <div id="text">
+            <div id="complete">
+                <ul></ul>
+            </div>
+            <div id="guessed-cities">
+                <ul></ul>
+            </div>
+        </div>
     </div>
-    <div><input type="text" name="guess" id="guess-input"></div>
+    <p>
+    Made by:    <a href="https://www.toffeemilkshake.co.uk">Tom Pearson</a>
+    </p>
+    <p>
     <a href="https://en.wikipedia.org/wiki/List_of_cities_in_the_United_Kingdom">Data Source</a>
     <a href="https://iafisher.com/projects/cities">Inspiration</a>
+    </p>
 </body>
-<script>
-
-console.log('uk cities v0.1');
-
-const normalise = (str) => {
-    if(!str || str == '') return null;
-    return String(str)
-        .toLowerCase()
-        .replace('ù','u')
-        .replace('è','e')
-        .replace('é','e')
-        .replace('ú','u')
-        .replace('á','a')
-        .replace(/[\s\W]/g, '');
-}
-
-const addNormalisedNames = d => {
-    d.normalisedNames = [
-        normalise(d.name),
-        ...d.acceptable.split(',').map(e=>normalise(e)),
-        normalise(d.welsh),
-        normalise(d['scottish gaelic']),
-        normalise(d['cornish'])
-    ].filter(value=>value!=null);
-    return d;
-}
-
-const drawGuessedList = cities => {
-    const guessedCities = cities
-        .filter(city=>(city.guessed))
-        .sort((cityA, cityB)=>(cityB.guessed - cityA.guessed));
-
-    const cityListItems = d3.select('#guessed-cities ul')
-        .selectAll('li')
-        .data(guessedCities, city=>city.name);
-    
-    cityListItems.enter()
-        .append('li')
-        .text(d=>d.name);
-    
-    cityListItems.exit().remove();
-}
-
-const drawCompletionScores = cities => {
-    const completionGroups = [
-        {
-            key:d=>d["over 1 million"],
-            description:"Cities with population over 1 mil",
-        },{
-            key:d=>d["over 100000"],
-            description:" ... over 100,000",
-        },{
-            key:d=>d["over 10000"],
-            description:" ... over 10,000",
-        },{
-            key:d=>(d.population<10000),
-            description:"Tiny cities",
-        }]
-        .map(group=>{
-            const groupCities = cities.filter(city=>(group.key(city)=='true' || group.key(city)==true));
-            const completedCities = groupCities.filter(city=>city.guessed);
-            return `${group.description}: ${completedCities.length}/${groupCities.length}`
-        });
-
-    const total = `<b>${cities.filter(city=>city.guessed).length}/${cities.length} cities</b>`
-    const completionListItems = d3.select('#complete ul')
-        .selectAll('li')
-        .data([total, ...completionGroups]);
-    
-    completionListItems.enter()
-        .append('li')
-        .html(d=>d);
-    
-    completionListItems.html(d=>d);
-}
-
-d3.tsv('cities.tsv', addNormalisedNames)
-    .then(cities=>{
-        const inputText = d3.select('#guess-input');
-        
-        const test = guessString=>cities.filter(city=>(city.normalisedNames.indexOf(guessString)>-1))[0];
-        let guessOrder = 1;
-        inputText.node()
-            .addEventListener('keyup', function(ev){
-                if(ev.code == 'Enter'){
-                    const city = test(normalise(ev.target.value));
-                    if(city){
-                        console.log(city);
-                        if(!city.guessed){
-                            city.guessed = guessOrder;
-                            guessOrder ++;
-                        }                    
-                        drawGuessedList(cities);
-                        drawCompletionScores(cities);
-                    }else{
-                        console.log('nope');
-                    };
-                    inputText.node().value = '';
-                }
-                
-            });
-    });
-
-</script>
+<script src="index.js"></script>
 </html>
