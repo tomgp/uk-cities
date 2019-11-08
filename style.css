@@ -9,6 +9,7 @@ a {
 
 ul{
   list-style-type: none;
+  padding:3px;
 }
 
 path {
@@ -27,6 +28,7 @@ circle {
 #guess-input {
   font-size: 30px;
   border:none;
+  width: 400px;
   border-bottom: 3px solid #0028ff;
   color: #0028ff;
   background-color : #dedede; 
@@ -68,6 +70,6 @@ svg.button{
 }
 
 .output{
-  border-bottom:solid 2px;
+  border-bottom:solid 1px;
   margin-bottom:20px;
 }
