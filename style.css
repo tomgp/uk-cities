@@ -1,10 +1,6 @@
 body {
   font-family: sans-serif;
-  color: #0028ff;
-}
-
-a {
-  color: #0028ff;    
+  color: var(--text-color);
 }
 
 ul{
@@ -14,7 +10,7 @@ ul{
 
 path {
   fill: white;
-  stroke: #0028ff;
+  stroke: black;
   stroke-width: 4;
   stroke-linejoin: round;
 }
@@ -29,8 +25,8 @@ circle {
   font-size: 30px;
   border:none;
   width: 400px;
-  border-bottom: 3px solid #0028ff;
-  color: #0028ff;
+  border-bottom: 3px solid var(--text-color);
+  color: var(--text-color);
   background-color : #dedede; 
 }
 
@@ -45,7 +41,7 @@ circle {
 }
 
 li:first-child{
-  color: #ff2800;
+  color: var(--link-colour);
   font-weight: bold;
 }
 
@@ -54,19 +50,19 @@ svg.button{
 }
 .guess{
   text-decoration: none;
-  border: 3px solid #0028ff;
+  border: 3px solid var(--text-color);
   padding: 5px;
   font-size: 25px;
   height: 35px;
-  color: #0028ff;
+  color: var(--text-color);
   background: white;
   box-sizing: border-box;
   position: relative;
   top: -3px;
 }
 .guess:hover{
-  color: #ff2800;
-  border: 3px solid #ff2800;
+  color: var(--link-color);
+  border: 3px solid var(--link-color);
 }
 
 .output{
